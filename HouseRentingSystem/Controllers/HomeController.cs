@@ -1,22 +1,28 @@
-using System.Diagnostics;
-using HouseRentingSystem.Models;
+
+using HouseRentingSystemProject.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HouseRentingSystem.Controllers
+public class HomeController(IStatisticsService service) : Controller
 {
-    public class HomeController : Controller
+    public IActionResult Index()
     {
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        this.ViewBag.TotalRequests = service.TotalRequests;
+        return this.View();
     }
+
+    public IActionResult Error(int statusCode)
+    {
+        if (statusCode == 401)
+        {
+            return this.View("Unauthorized");
+        }
+
+        return this.View("NotFound");
+    }
+
+    public IActionResult Crash()
+        => throw new Exception("Test exception");
+
+    public IActionResult ServerError()
+        => this.View();
 }
